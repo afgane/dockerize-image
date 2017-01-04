@@ -1,0 +1,67 @@
+{
+  "variables": {
+    "aws_access_key": "{{env `AWS_ACCESS_KEY`}}",
+    "aws_secret_key": "{{env `AWS_SECRET_KEY`}}",
+    "image_name": "ubuntu-16.04-with-docker",
+    "aws_source_ami": "ami-e13739f6",
+    "aws_instance_type": "t2.micro",
+    "js_floating_ip": "149.165.168.93"
+  },
+  "builders": [
+    {
+      "type": "amazon-ebs",
+      "access_key": "{{user `aws_access_key`}}",
+      "secret_key": "{{user `aws_secret_key`}}",
+      "region": "us-east-1",
+      "ssh_username": "ubuntu",
+      "ami_virtualization_type": "hvm",
+      "source_ami": "{{user `aws_source_ami`}}",
+      "instance_type": "{{user `aws_instance_type`}}",
+      "ami_name": "{{user `image_name`}}",
+      "ami_block_device_mappings": [ {
+          "device_name": "/dev/sda1",
+          "volume_size": 20,
+          "delete_on_termination": true
+      } ],
+      "launch_block_device_mappings": [ {
+          "device_name": "/dev/sda1",
+          "volume_size": 20,
+          "delete_on_termination": true
+      } ],
+      "ami_regions": [
+        "eu-west-1",
+        "ap-southeast-2",
+        "ap-northeast-1"
+      ]
+    },
+    {
+      "name": "Jetstream",
+      "type": "openstack",
+      "openstack_provider": "Compute Service",
+      "domain_name": "tacc",
+      "ssh_username": "ubuntu",
+      "source_image": "1c997f2c-bae9-4b53-9197-2948cd449405",
+      "flavor": "1",
+      "image_name": "{{user `image_name`}}",
+      "networks": [ "295cba46-10f0-4fd4-8494-c821c4c4098a" ],
+      "use_floating_ip": true,
+      "floating_ip": "{{user `js_floating_ip`}}",
+      "security_groups": [ "default" ]
+      }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "inline": [
+        "sleep 12",
+        "sudo apt-add-repository ppa:ansible/ansible",
+        "sudo apt-get -y update",
+        "sudo apt-get install -y ansible"
+      ]
+    },
+    {
+      "type": "ansible-local",
+      "playbook_file": "playbooks/install-docker.yml"
+    }
+  ]
+}
