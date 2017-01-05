@@ -2,19 +2,25 @@
 # - hosts: jetstream  # Uncomment this line for use without packer
   remote_user: ubuntu
   become: yes
-  tasks:
+  vars:
+    - configure_nginx: yes
 
+  tasks:
     - name: Read uname
       shell: uname -r
       register: uname_output
 
     - name: Install dependencies
-      apt: pkg={{ item }}
+      apt:
+        name: "{{ item }}"
+        update_cache: yes
+        cache_valid_time: 3600
       with_items:
         - apt-transport-https
         - ca-certificates
         - linux-image-extra-{{ uname_output.stdout }}
         - linux-image-extra-virtual
+        - aptitude
 
     - name: Add Docker repository key
       apt_key:
@@ -35,6 +41,11 @@
       with_items:
         - docker-engine
 
+    - name: Upgrade packages
+      apt:
+        upgrade: yes
+        update_cache: no
+
     - name: Start docker
       service:
         name: docker
@@ -44,8 +55,28 @@
       group:
         name: docker
         state: present
+
     - name: Add user to docker group
       user:
         name: "{{ansible_ssh_user}}"
         groups: docker
         append: yes
+
+    - name: Install nginx
+      apt:
+        pkg: nginx
+      when: configure_nginx
+
+    - name: Place nginx files
+      copy:
+        src: "files/{{ item.src }}"
+        dest: "/etc/nginx/{{ item.dest }}"
+      with_items:
+        - { src: nginx.conf, dest: nginx.conf }
+        - { src: nginx.servers, dest: "sites-enabled/default.servers" }
+        - { src: nginx.locations, dest: "sites-enabled/default.locations" }
+        - { src: errdoc.html, dest: errdoc.html }
+        - { src: gears.gif, dest: gears.gif }
+        - { src: cloud.png, dest: cloud.png }
+        - { src: favicon.ico, dest: favicon.ico }
+      when: configure_nginx

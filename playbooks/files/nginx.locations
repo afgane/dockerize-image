@@ -1,0 +1,19 @@
+location / {
+proxy_pass  http://docker_app;
+    proxy_set_header   X-Forwarded-Host $host;
+    proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
+}
+
+location /err {
+    alias /etc/nginx/;
+}
+
+location /favicon.ico {
+    alias /etc/nginx/favicon.ico;
+}
+
+error_page 403 404 500 502 503 504 /errdoc.html;
+location /errdoc.html {
+    root /etc/nginx/;
+    internal;
+}

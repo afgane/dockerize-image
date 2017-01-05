@@ -2,7 +2,7 @@
   "variables": {
     "aws_access_key": "{{env `AWS_ACCESS_KEY`}}",
     "aws_secret_key": "{{env `AWS_SECRET_KEY`}}",
-    "image_name": "ubuntu-16.04-with-docker",
+    "image_name": "a-ubuntu-16.04-with-docker",
     "aws_source_ami": "ami-e13739f6",
     "aws_instance_type": "t2.micro",
     "js_floating_ip": "149.165.168.93"
@@ -20,12 +20,12 @@
       "ami_name": "{{user `image_name`}}",
       "ami_block_device_mappings": [ {
           "device_name": "/dev/sda1",
-          "volume_size": 20,
+          "volume_size": 25,
           "delete_on_termination": true
       } ],
       "launch_block_device_mappings": [ {
           "device_name": "/dev/sda1",
-          "volume_size": 20,
+          "volume_size": 8,
           "delete_on_termination": true
       } ],
       "ami_regions": [
@@ -40,7 +40,7 @@
       "openstack_provider": "Compute Service",
       "domain_name": "tacc",
       "ssh_username": "ubuntu",
-      "source_image": "1c997f2c-bae9-4b53-9197-2948cd449405",
+      "source_image": "3e2cfdd5-f726-4535-b035-26f72917aa96",
       "flavor": "1",
       "image_name": "{{user `image_name`}}",
       "networks": [ "295cba46-10f0-4fd4-8494-c821c4c4098a" ],
