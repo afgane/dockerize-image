@@ -30,8 +30,7 @@
       } ],
       "ami_regions": [
         "eu-west-1",
-        "ap-southeast-2",
-        "ap-northeast-1"
+        "ap-southeast-2"
       ]
     },
     {
@@ -61,7 +60,8 @@
     },
     {
       "type": "ansible-local",
-      "playbook_file": "playbooks/install-docker.yml"
+      "playbook_file": "playbook.yml",
+      "playbook_dir": "."
     }
   ]
 }

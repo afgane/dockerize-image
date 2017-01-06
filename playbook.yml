@@ -1,0 +1,10 @@
+---
+
+- hosts: 127.0.0.1
+# - hosts: jetstream  # Uncomment this line for use without packer
+  remote_user: ubuntu
+  become: yes
+  vars:
+    - configure_nginx: yes
+  roles:
+    - role: docker
